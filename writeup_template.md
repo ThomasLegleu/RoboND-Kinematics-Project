@@ -210,11 +210,11 @@ Set the dh parameter information as a dictionary:
 
 DH parameter table allows us to generate individual transforms between various links:
 
-![alt text](IMAGES/fw_tf_3parts.PNG)
+![alt text](IMAGES/fw_tf_3parts.png)
 
 Transform from one frame to another using the following matrix:
 
-![alt text](IMAGES/fw_tf_mat1.PNG)
+![alt text](IMAGES/fw_tf_mat1.png)
 
 Generate function to return the homogeneous transform between each link:
 
