@@ -74,7 +74,7 @@ To run IK Server use:
 ### Kinematic Analysis 
 #### 1. Run the forward_kinematics demo and evaluate the kr210.urdf.xacro file to perform kinematic analysis of Kuka KR210 robot and derive its DH parameters.
 
-#### URDF joint position and orientation extraction from the kr210.urdf.xacro file: 
+URDF joint position and orientation extraction from the kr210.urdf.xacro file: 
 
       <!-- joints -->
       <joint name="fixed_base_joint" type="fixed">
@@ -125,7 +125,7 @@ To run IK Server use:
         <limit lower="${-350*deg}" upper="${350*deg}" effort="300" velocity="${219*deg}"/>
       </joint>
 
-#### URDF joint positions and orientations extraction table:
+URDF joint positions and orientations extraction table:
 
 0   | joint | parent | child | x | y | z | r | p | y
 --- | --- | --- | --- | --- |--- | --- | --- | --- | --- |
@@ -139,19 +139,19 @@ To run IK Server use:
 7 | gripper | link_6 | grip_link  | 0.193 | 0 | 0 | 0 | 0 | 0
 . | total | |  | 2.153 | 0 | 1.946 | 0 | 0 | 0
 
-#### Translate x and z coordinates into link length and link offset for dh parameter table:
+Translate x and z coordinates into link length and link offset for dh parameter table:
 
 drawing one here !!!!!!!!
 
 
 
-#### show all the DH Parameters in respect to a 6DOF drawing: 
+show all the DH Parameters in respect to a 6DOF drawing: 
 
 
 drawing two here !!!!!!!!!!!!!!! 
 
 
-#### Elements of the DH Parameter table for producing individual transforms and homogeneous transform:
+Elements of the DH Parameter table for producing individual transforms and homogeneous transform:
 
 Origin O(i) = intersection between Xi and Zi axis
 
@@ -164,14 +164,14 @@ alpha = Link Twist: alpha(i-1) = angle from Z(i-1) to Z(i) measured about Xi-1 u
 q = theta = Joint Angle: theta(i) = angle from X(i-1) to X(i) measured about Zi using right hand rule. all joint angles will be zero at initial Robot state in KR210 except joint 2 which has a -90 degree constant offset between X(1) and X(2).
 
 
-#### begin the coding by importing all the stuff:
+begin the coding by importing all the stuff:
 
     import numpy as np
     from numpy import array
     from sympy import symbols, cos, sin, pi, simplify, sqrt, atan2, pprint
     from sympy.matrices import Matrix
 
-#### establish variables for the dh table and homogeneous transform:
+establish variables for the dh table and homogeneous transform:
 
     q1, q2, q3, q4,q5, q6, q7 = symbols('q1:8')
     d1, d2, d3, d4,d5,d6,d7 = symbols('d1:8')
@@ -179,7 +179,7 @@ q = theta = Joint Angle: theta(i) = angle from X(i-1) to X(i) measured about Zi 
     alpha0, alpha1, alpha2, alpha3, alpha4, alpha5, alpha6 = symbols('alpha0:7')
 
 
-#### Kuka KR210 robot DH parameters:
+Kuka KR210 robot DH parameters:
 
 
 Links | alpha(i-1) | a(i-1) | d(i-1) | theta(i)
@@ -193,7 +193,7 @@ Links | alpha(i-1) | a(i-1) | d(i-1) | theta(i)
 6->EE | 0 | 0 | 0.303 | q7
 
 
-#### set the dh parameter information as a dictionary:
+set the dh parameter information as a dictionary:
 
     dh_Params = { alpha0:      0, a0:     0, d1: 0.75, q1:         q1,    
                   alpha1: -pi/2., a1:  0.35, d2:    0, q2:-pi/2. + q2,
@@ -209,7 +209,7 @@ Links | alpha(i-1) | a(i-1) | d(i-1) | theta(i)
 
 
 
-#### generate function to return the homogeneous transform between each link:
+generate function to return the homogeneous transform between each link:
 
 image one!!!!!
 
@@ -224,7 +224,7 @@ image one!!!!!
         return h_t
 
 
-#### perform the homogeneous transform between the links:
+perform the homogeneous transform between the links:
 
     T0_T1 = h_transform(alpha0,a0,d1,q1).subs(dh_Params)
     T1_T2 = h_transform(alpha1,a1,d2,q2).subs(dh_Params) 
@@ -235,7 +235,7 @@ image one!!!!!
     T6_T7 = h_transform(alpha6,a6,d7,q7).subs(dh_Params)
 
 
-#### get the composition of all transforms from base to gripper multiply the individual matrices: 
+get the composition of all transforms from base to gripper multiply the individual matrices: 
 
 
     T0_T2 = ( T0_T1 * T1_T2 )
@@ -246,7 +246,7 @@ image one!!!!!
     T0_T7 = ( T0_T6 * T6_T7 )
 
 
-#### Correction Needed to Account for Orientation Difference between definition of Gripper Link_G in URDF versus DH Convention:
+Correction Needed to Account for Orientation Difference between definition of Gripper Link_G in URDF versus DH Convention:
 
 
     R_y = Matrix([[ cos(-pi/2.),        0, sin(-pi/2.), 0 ],
@@ -262,12 +262,12 @@ image one!!!!!
     R_corr = (R_z * R_y)
 
 
-#### Total Homogeneous Transform Between (Base) Link_0 and (End Effector) Link_7 with orientation correction applied:
+Total Homogeneous Transform Between (Base) Link_0 and (End Effector) Link_7 with orientation correction applied:
 
 
     T0_T7_corr = (T0_T7 * R_corr)
     
-#### Test the results:      
+Test the results:      
 
 test_01: 
 
