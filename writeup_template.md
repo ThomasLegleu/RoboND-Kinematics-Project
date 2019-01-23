@@ -142,7 +142,7 @@ URDF joint positions and orientations extraction table:
 Translate x and z coordinates into link length and link offset for dh parameter table:
 
 drawing one here !!!!!!!!
-![alt text](IMAGES/color_thresh.JPG)
+
 
 
 show all the DH Parameters in respect to a 6DOF drawing: 
@@ -273,6 +273,8 @@ test_01:
     T0_7 = T0_T7_corr.evalf(subs={q1: 0, q2: 0, q3: 0, q4: 0, q5: 0, q6: 0})
     
  image from python testing: 
+ 
+ ![alt text](IMAGES/test_01python.PNG)
     
  image from rviz joint information : 
  
