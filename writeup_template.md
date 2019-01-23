@@ -40,6 +40,33 @@ Here is an example of how to include an image in your writeup.
 
 #### 2. Using the DH parameter table you derived earlier, create individual transformation matrices about each joint. In addition, also generate a generalized homogeneous transform between base_link and gripper_link using only end-effector(gripper) pose.
 
+O	joint	parent	child	x	y	z	r	p	y
+0	fixed_base	base_footprint	base_link	0	0	0	0	0	0
+1	joint_1	base_link	link_1	0	0	0.33	0	0	0
+2	joint_2	link_1	link_2	0 .35	0	0.42	0	0	0
+3	joint_3	link_2	link_3	0	0	1.25	0	0	0
+4	joint_4	link_3	link_4	0.96	0	-0.054	0	0	0
+5	joint_5	link_4	link_5	0.54	0	0	0	0	0
+6	joint_6	link_5	link_6	0.193	0	0	0	0	0
+7	gripper	link_6	gripper_link	0.11	0	0	0	0	0
+.	Total (m)			2.153	0	1.946	0	0	0
+
+
+
+
+Kuka KR210 robot DH parameters.
+
+Origin O(i) = intersection between Xi and Zi axis
+
+Link Length: a(i-1) = Zi-1 - Zi along the X(i-1) axis
+
+Link Offset: d(i) = X(i-1) - X(i) along Z(i) axis
+
+Link Twist: alpha(i-1) = angle from Z(i-1) to Z(i) measured about Xi-1 using right hand rule
+
+Joint Angle: theta(i) = angle from X(i-1) to X(i) measured about Zi using right hand rule. all joint angles will be zero at initial Robot state in KR210 except joint 2 which has a -90 degree constant offset between X(1) and X(2).
+
+Gripper frame: is the end point that we care about. it is displaced from Frame 6 by a translation along Z(6).
 
 
 
@@ -52,6 +79,8 @@ Links | alpha(i-1) | a(i-1) | d(i-1) | theta(i)
 4->5 | 90 | 0 | 0 | q5
 5->6 | -90 | 0 | 0 | q6
 6->EE | 0 | 0 | 0.303 | q7
+
+
 
 
 #### 3. Decouple Inverse Kinematics problem into Inverse Position Kinematics and inverse Orientation Kinematics; doing so derive the equations to calculate all individual joint angles.
