@@ -142,7 +142,7 @@ URDF joint positions and orientations extraction table:
 Translate x and z coordinates into link length and link offset for dh parameter table:
 
 drawing one here !!!!!!!!
-
+![alt text](images/color_thresh.JPG)
 
 
 show all the DH Parameters in respect to a 6DOF drawing: 
