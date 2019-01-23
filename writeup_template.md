@@ -208,10 +208,15 @@ Set the dh parameter information as a dictionary:
 #### 2. Using the DH parameter table you derived earlier, create individual transformation matrices about each joint. In addition, also generate a generalized homogeneous transform between base_link and gripper_link using only end-effector(gripper) pose.
 
 
+DH parameter table allows us to generate individual transforms between various links:
+
+![alt text](IMAGES/fw_tf_3parts.PNG)
+
+Transform from one frame to another using the following matrix:
+
+![alt text](IMAGES/fw_tf_mat1.PNG)
 
 Generate function to return the homogeneous transform between each link:
-
-image one!!!!!
 
 
     def h_transform(alpha,a,d,q):
@@ -266,9 +271,13 @@ Total Homogeneous Transform Between (Base) Link_0 and (End Effector) Link_7 with
 
     T0_T7_corr = (T0_T7 * R_corr)
     
-Test the results:      
+#### Test the results: 
 
-test_01: 
+launch the fk simulator: 
+
+    $ roslaunch kuka_arm forward_kinematics.launch
+
+test_01 all thetas = 0: 
 
     T0_7 = T0_T7_corr.evalf(subs={q1: 0, q2: 0, q3: 0, q4: 0, q5: 0, q6: 0})
     
@@ -280,7 +289,7 @@ test_01:
  
  ![alt text](IMAGES/test_1fk.PNG)
  
- test_02: 
+ test_02 theta 1 = 0.77 and the rest of thetas = 0 : 
  
     T0_7 = T0_T7_corr.evalf(subs={q1: 0.77, q2: 0, q3: 0, q4: 0, q5: 0, q6: 0})
     
