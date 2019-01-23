@@ -75,18 +75,112 @@ To run IK Server use:
 ### Kinematic Analysis 
 #### 1. Run the forward_kinematics demo and evaluate the kr210.urdf.xacro file to perform kinematic analysis of Kuka KR210 robot and derive its DH parameters.
 
-URDF JOINT POSITIONS AND ORIENTATIONS EXTRACTION /////////////////////////////////////////////////////////////////////
+URDF JOINT POSITIONS AND ORIENTATIONS EXTRACTION FROM kr210.urdf.xacro file //////////////////////////////////////////
+
+      <!-- joints -->
+      <joint name="fixed_base_joint" type="fixed">
+        <parent link="base_footprint"/>
+        <child link="base_link"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+      </joint>
+      <joint name="joint_1" type="revolute">
+        <origin xyz="0 0 0.33" rpy="0 0 0"/>
+        <parent link="base_link"/>
+        <child link="link_1"/>
+        <axis xyz="0 0 1"/>
+        <limit lower="${-185*deg}" upper="${185*deg}" effort="300" velocity="${123*deg}"/>
+      </joint>
+      <joint name="joint_2" type="revolute">
+        <origin xyz="0.35 0 0.42" rpy="0 0 0"/>
+        <parent link="link_1"/>
+        <child link="link_2"/>
+        <axis xyz="0 1 0"/>
+        <limit lower="${-45*deg}" upper="${85*deg}" effort="300" velocity="${115*deg}"/>
+      </joint>
+      <joint name="joint_3" type="revolute">
+        <origin xyz="0 0 1.25" rpy="0 0 0"/>
+        <parent link="link_2"/>
+        <child link="link_3"/>
+        <axis xyz="0 1 0"/>
+        <limit lower="${-210*deg}" upper="${(155-90)*deg}" effort="300" velocity="${112*deg}"/>
+      </joint>
+      <joint name="joint_4" type="revolute">
+        <origin xyz="0.96 0 -0.054" rpy="0 0 0"/>
+        <parent link="link_3"/>
+        <child link="link_4"/>
+        <axis xyz="1 0 0"/>
+        <limit lower="${-350*deg}" upper="${350*deg}" effort="300" velocity="${179*deg}"/>
+      </joint>
+      <joint name="joint_5" type="revolute">
+        <origin xyz="0.54 0 0" rpy="0 0 0"/>
+        <parent link="link_4"/>
+        <child link="link_5"/>
+        <axis xyz="0 1 0"/>
+        <limit lower="${-125*deg}" upper="${125*deg}" effort="300" velocity="${172*deg}"/>
+      </joint>
+      <joint name="joint_6" type="revolute">
+        <origin xyz="0.193 0 0" rpy="0 0 0"/>
+        <parent link="link_5"/>
+        <child link="link_6"/>
+        <axis xyz="1 0 0"/>
+        <limit lower="${-350*deg}" upper="${350*deg}" effort="300" velocity="${219*deg}"/>
+      </joint>
+
+URDF JOINT POSITIONS AND ORIENTATIONS EXTRACTION TABLE /////////////////////////////////////////////////////////////////////
+
+0   | joint | parent | child | x | y | z | r | p | y
+--- | --- | --- | --- | --- |--- | --- | --- | --- | --- |
+0 | fixed_base | base_footprint | base_link | 0 | 0 | 0 | 0| 0 | 0
+1 | joint_1 | base_link | link_1 | 0 | 0 | 0.33 | 0 | 0 | 0
+2 | joint_2 | link_1 | link_2 | 0.35 | 0 | 0.42 | 0 | 0 | 0
+3 | joint_3 | link_2 | link_3  | 0 | 0 | 1.25 | 0 | 0 | 0
+4 | joint_4 | link_3 | link_4  | 0.96 | 0 | -0.054  | 0 | 0 | 0
+5 | joint_5 | link_4 | link_5  | 0.54 | 0 | 0 | 0 | 0 | 0
+6 | joint_6 | link_5 | link_6  | 0.193 | 0 | 0 | 0 | 0 | 0
+7 | gripper | link_6 | grip_link  | 0.193 | 0 | 0 | 0 | 0 | 0
+. | total | |  | 2.153 | 0 | 1.946 | 0 | 0 | 0
+
+# URDF JOINT POSITIONS AND ORIENTATIONS DRAWING /////////////////////////////////////////////////////////////////////
+
+drawing one here !!!!!!!!
 
 
-#### 2. Using the DH parameter table you derived earlier, create individual transformation matrices about each joint. In addition, also generate a generalized homogeneous transform between base_link and gripper_link using only end-effector(gripper) pose.
+
+# translate urdf into dh parameters 
 
 
+drawing two here !!!!!!!!!!!!!!! 
 
 
-URDF PARMS TRANSLATED INTO DH PARAMETERS /////////////////////////////////////////////////////////////////////////////
+# Elements of the DH Parameter table for producing individual transforms and homogeneous transform:
+
+Origin O(i) = intersection between Xi and Zi axis
+
+a = Link Length: a(i-1) = Zi-1 - Zi along the X(i-1) axis
+
+d = Link Offset: d(i) = X(i-1) - X(i) along Z(i) axis
+
+alpha = Link Twist: alpha(i-1) = angle from Z(i-1) to Z(i) measured about Xi-1 using right hand rule
+
+q = theta = Joint Angle: theta(i) = angle from X(i-1) to X(i) measured about Zi using right hand rule. all joint angles will be zero at initial Robot state in KR210 except joint 2 which has a -90 degree constant offset between X(1) and X(2).
 
 
-Kuka KR210 robot DH parameters. ///////////////////////////////////////////////////////////////////////////////////////
+import all the stuff
+
+    import numpy as np
+    from numpy import array
+    from sympy import symbols, cos, sin, pi, simplify, sqrt, atan2, pprint
+    from sympy.matrices import Matrix
+
+establish variables for the dh table and homogeneous transform
+
+    q1, q2, q3, q4,q5, q6, q7 = symbols('q1:8')
+    d1, d2, d3, d4,d5,d6,d7 = symbols('d1:8')
+    a0, a1, a2, a3, a4, a5, a6 = symbols('a0:7')
+    alpha0, alpha1, alpha2, alpha3, alpha4, alpha5, alpha6 = symbols('alpha0:7')
+
+
+# Kuka KR210 robot DH parameters:
 
 
 Links | alpha(i-1) | a(i-1) | d(i-1) | theta(i)
@@ -100,10 +194,90 @@ Links | alpha(i-1) | a(i-1) | d(i-1) | theta(i)
 6->EE | 0 | 0 | 0.303 | q7
 
 
-HOMOGENEOUS TRANSFORM EXPLAINED ////////////////////////////////////////////////////////////////////////////////////////
+# set the dh parameter information as a dictionary:
+
+    dh_Params = { alpha0:      0, a0:     0, d1: 0.75, q1:         q1,    
+                  alpha1: -pi/2., a1:  0.35, d2:    0, q2:-pi/2. + q2,
+                  alpha2:      0, a2:  1.25, d3:    0, q3:         q3,
+                  alpha3: -pi/2., a3:-0.054, d4:  1.5, q4:         q4,
+                  alpha4:  pi/2., a4:     0, d5:    0, q5:         q5,
+                  alpha5: -pi/2., a5:     0, d6:    0, q6:         q6,
+                  alpha6:      0, a6:     0, d7:0.303, q7:         0 }
 
 
-CODING THE FK HOMOGENEOUS TRANSFORM ////////////////////////////////////////////////////////////////////////////////////
+
+#### 2. Using the DH parameter table you derived earlier, create individual transformation matrices about each joint. In addition, also generate a generalized homogeneous transform between base_link and gripper_link using only end-effector(gripper) pose.
+
+
+
+# generate function to return the homogeneous transform between each link:
+
+    def h_transform(alpha,a,d,q):
+
+        h_t = Matrix([[           cos(q),           -sin(q),          0 ,            a],
+                      [sin(q)*cos(alpha), cos(q)*cos(alpha), -sin(alpha),-sin(alpha)*d],
+                      [sin(q)*sin(alpha), cos(q)*sin(alpha),  cos(alpha), cos(alpha)*d],
+                      [                0,                 0,           0,            1]])
+
+        return h_t
+
+
+# perform the homogeneous transform between the links:
+
+    T0_T1 = h_transform(alpha0,a0,d1,q1).subs(dh_Params)
+    T1_T2 = h_transform(alpha1,a1,d2,q2).subs(dh_Params) 
+    T2_T3 = h_transform(alpha2,a2,d3,q3).subs(dh_Params)
+    T3_T4 = h_transform(alpha3,a3,d4,q4).subs(dh_Params)
+    T4_T5 = h_transform(alpha4,a4,d5,q5).subs(dh_Params)
+    T5_T6 = h_transform(alpha5,a5,d6,q6).subs(dh_Params)
+    T6_T7 = h_transform(alpha6,a6,d7,q7).subs(dh_Params)
+
+
+# get the composition of all transforms from base to gripper multiply the individual matrices: 
+
+
+    T0_T2 = ( T0_T1 * T1_T2 )
+    T0_T3 = ( T0_T2 * T2_T3 )
+    T0_T4 = ( T0_T3 * T3_T4 )
+    T0_T5 = ( T0_T4 * T4_T5 )
+    T0_T6 = ( T0_T5 * T5_T6 )
+    T0_T7 = ( T0_T6 * T6_T7 )
+
+
+# Correction Needed to Account for Orientation Difference between definition of Gripper Link_G in URDF versus DH Convention:
+
+
+    R_y = Matrix([[ cos(-pi/2.),        0, sin(-pi/2.), 0 ],
+                  [           0,       1.,           0, 0 ],
+                  [-sin(-pi/2.),        0, cos(-pi/2.), 0 ],
+                  [           0,        0,           0, 1 ]])
+
+    R_z = Matrix([[     cos(pi), -sin(pi),           0, 0 ],
+                  [     sin(pi),  cos(pi),           0, 0 ],
+                  [           0,        0,          1., 0 ],
+                  [           0,        0,           0, 1.]])
+
+    R_corr = (R_z * R_y)
+
+
+# Total Homogeneous Transform Between (Base) Link_0 and (End Effector) Link_7
+# With orientation correction applied
+
+
+    T0_T7_corr = (T0_T7 * R_corr)
+    
+# Test the results      
+
+    T0_7 = T0_T7_corr.evalf(subs={q1: 0, q2: 0, q3: 0, q4: 0, q5: 0, q6: 0})
+    
+    image from python terminator 
+    
+    image from 
+    
+
+    T0_7 = T0_T7_corr.evalf(subs={q1: 0, q2: 0, q3: 0, q4: 0, q5: 0, q6: 0})
+    print(T0_7)
+
 
 
 
