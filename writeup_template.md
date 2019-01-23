@@ -153,18 +153,18 @@ drawing two here !!!!!!!!!!!!!!!
 
 Elements of the DH Parameter table for producing individual transforms and homogeneous transform:
 
-  Origin O(i) = intersection between Xi and Zi axis
+    Origin O(i) = intersection between Xi and Zi axis
 
-  a = Link Length: a(i-1) = Zi-1 - Zi along the X(i-1) axis
+    a = Link Length: a(i-1) = Zi-1 - Zi along the X(i-1) axis
 
-  d = Link Offset: d(i) = X(i-1) - X(i) along Z(i) axis
+    d = Link Offset: d(i) = X(i-1) - X(i) along Z(i) axis
 
-  alpha = Link Twist: alpha(i-1) = angle from Z(i-1) to Z(i) measured about Xi-1 using right hand rule
+    alpha = Link Twist: alpha(i-1) = angle from Z(i-1) to Z(i) measured about Xi-1 using right hand rule
 
-  q = theta = Joint Angle: theta(i) = angle from X(i-1) to X(i) measured about Zi using right hand rule. all joint angles     will be zero at initial Robot state in KR210 except joint 2 which has a -90 degree constant offset between X(1) and X(2).
+    q = theta = Joint Angle: theta(i) = angle from X(i-1) to X(i) measured about Zi using right hand rule. all joint angles     will be zero at initial Robot state in KR210 except joint 2 which has a -90 degree constant offset between X(1) and         X(2).
 
 
-Begin the coding by importing all the stuff:
+Begin the coding by importing all the proper libraries:
 
     import numpy as np
     from numpy import array
@@ -278,12 +278,16 @@ test_01:
     
  image from rviz joint information : 
  
+ ![alt text](IMAGES/test_1fk.PNG)
+ 
  test_02: 
  
     T0_7 = T0_T7_corr.evalf(subs={q1: 0.77, q2: 0, q3: 0, q4: 0, q5: 0, q6: 0})
     
  image from python testing: 
-    
+ 
+ ![alt text](IMAGES/test_02python.PNG)
+ 
  image from rviz joint information : 
 
 
