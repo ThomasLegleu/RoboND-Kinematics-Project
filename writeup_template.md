@@ -142,7 +142,7 @@ URDF joint positions and orientations extraction table:
 Translate x and z coordinates into link length and link offset for dh parameter table:
 
 drawing one here !!!!!!!!
-![alt text](images/color_thresh.JPG)
+![alt text](IMAGES/color_thresh.JPG)
 
 
 show all the DH Parameters in respect to a 6DOF drawing: 
@@ -153,25 +153,25 @@ drawing two here !!!!!!!!!!!!!!!
 
 Elements of the DH Parameter table for producing individual transforms and homogeneous transform:
 
-Origin O(i) = intersection between Xi and Zi axis
+  Origin O(i) = intersection between Xi and Zi axis
 
-a = Link Length: a(i-1) = Zi-1 - Zi along the X(i-1) axis
+  a = Link Length: a(i-1) = Zi-1 - Zi along the X(i-1) axis
 
-d = Link Offset: d(i) = X(i-1) - X(i) along Z(i) axis
+  d = Link Offset: d(i) = X(i-1) - X(i) along Z(i) axis
 
-alpha = Link Twist: alpha(i-1) = angle from Z(i-1) to Z(i) measured about Xi-1 using right hand rule
+  alpha = Link Twist: alpha(i-1) = angle from Z(i-1) to Z(i) measured about Xi-1 using right hand rule
 
-q = theta = Joint Angle: theta(i) = angle from X(i-1) to X(i) measured about Zi using right hand rule. all joint angles will be zero at initial Robot state in KR210 except joint 2 which has a -90 degree constant offset between X(1) and X(2).
+  q = theta = Joint Angle: theta(i) = angle from X(i-1) to X(i) measured about Zi using right hand rule. all joint angles     will be zero at initial Robot state in KR210 except joint 2 which has a -90 degree constant offset between X(1) and X(2).
 
 
-begin the coding by importing all the stuff:
+Begin the coding by importing all the stuff:
 
     import numpy as np
     from numpy import array
     from sympy import symbols, cos, sin, pi, simplify, sqrt, atan2, pprint
     from sympy.matrices import Matrix
 
-establish variables for the dh table and homogeneous transform:
+Establish variables for the dh table and homogeneous transform:
 
     q1, q2, q3, q4,q5, q6, q7 = symbols('q1:8')
     d1, d2, d3, d4,d5,d6,d7 = symbols('d1:8')
@@ -193,7 +193,7 @@ Links | alpha(i-1) | a(i-1) | d(i-1) | theta(i)
 6->EE | 0 | 0 | 0.303 | q7
 
 
-set the dh parameter information as a dictionary:
+Set the dh parameter information as a dictionary:
 
     dh_Params = { alpha0:      0, a0:     0, d1: 0.75, q1:         q1,    
                   alpha1: -pi/2., a1:  0.35, d2:    0, q2:-pi/2. + q2,
@@ -209,7 +209,7 @@ set the dh parameter information as a dictionary:
 
 
 
-generate function to return the homogeneous transform between each link:
+Generate function to return the homogeneous transform between each link:
 
 image one!!!!!
 
@@ -224,7 +224,7 @@ image one!!!!!
         return h_t
 
 
-perform the homogeneous transform between the links:
+Perform the homogeneous transform between the links:
 
     T0_T1 = h_transform(alpha0,a0,d1,q1).subs(dh_Params)
     T1_T2 = h_transform(alpha1,a1,d2,q2).subs(dh_Params) 
@@ -235,7 +235,7 @@ perform the homogeneous transform between the links:
     T6_T7 = h_transform(alpha6,a6,d7,q7).subs(dh_Params)
 
 
-get the composition of all transforms from base to gripper multiply the individual matrices: 
+Get the composition of all transforms from base to gripper multiply the individual matrices: 
 
 
     T0_T2 = ( T0_T1 * T1_T2 )
@@ -264,7 +264,6 @@ Correction Needed to Account for Orientation Difference between definition of Gr
 
 Total Homogeneous Transform Between (Base) Link_0 and (End Effector) Link_7 with orientation correction applied:
 
-
     T0_T7_corr = (T0_T7 * R_corr)
     
 Test the results:      
@@ -279,7 +278,7 @@ test_01:
  
  test_02: 
  
-    T0_7 = T0_T7_corr.evalf(subs={q1: 0, q2: 0, q3: 0, q4: 0, q5: 0, q6: 0})
+    T0_7 = T0_T7_corr.evalf(subs={q1: 0.77, q2: 0, q3: 0, q4: 0, q5: 0, q6: 0})
     
  image from python testing: 
     
