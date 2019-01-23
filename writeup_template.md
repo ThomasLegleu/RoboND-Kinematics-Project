@@ -286,11 +286,11 @@ test_01:
     
  image from python testing: 
  
- ![alt text](IMAGES/test_02python.PNG)
+ ![alt text](IMAGES/fk_test_2.PNG)
  
  image from rviz joint information : 
 
-
+ ![alt text](IMAGES/test_2fk.PNG)
 
 
 
