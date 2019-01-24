@@ -345,8 +345,6 @@ and orientation difference correction matrix (Rot_corr) as earlier discussed in 
 
   #### R_EE = R_rpy * R_corr
 
-We substitute the obtained roll, pitch and yaw in the final rotation matrix. Python Code is as following:
-
 Find EE rotation matrix RPY (Roll, Pitch, Yaw):
 
     r,p,y = symbols('r p y')
