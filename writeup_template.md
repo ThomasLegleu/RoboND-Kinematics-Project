@@ -313,9 +313,12 @@ And here's where you can draw out and show your math for the derivation of your 
 
 #### 1. Fill in the `IK_server.py` file with properly commented python code for calculating Inverse Kinematics based on previously performed Kinematic Analysis. Your code must guide the robot to successfully complete 8/10 pick and place cycles. Briefly discuss the code you implemented and your results. 
 
- ik code starts here:
+#### Inverse Position
+
+First step is to get the end-effector position(Px, Py, Pz) and orientation (Roll, Pitch, Yaw) from the test cases data class 
  
-    # Requested end-effector (EE) position
+ Requested end-effector (EE) position:
+ 
     px = req.poses[x].position.x
     py = req.poses[x].position.y
     pz = req.poses[x].position.z
@@ -326,15 +329,25 @@ store EE position in a matrix:
                  [py],
                  [pz]])
 
- Requested end-effector (EE) orientation (roll pitch yaw that will be used to identify the rotation matrix for the ee):
+Requested end-effector (EE) orientation (roll pitch yaw that will be used to identify the rotation matrix for the ee):
  
     (roll,pitch,yaw) = tf.transformations.euler_from_quaternion(
         [req.poses[x].orientation.x,
          req.poses[x].orientation.y,
          req.poses[x].orientation.z,
          req.poses[x].orientation.w])
+         
+We will need rotation matrix for the end-effector:
 
- Find EE rotation matrix RPY (Roll, Pitch, Yaw):
+  #### R_rpy = Rot(Z, yaw) * Rot(Y, pitch) * Rot(X, roll)
+
+and orientation difference correction matrix (Rot_corr) as earlier discussed in FK section.
+
+  #### R_EE = R_rpy * R_corr
+
+We substitute the obtained roll, pitch and yaw in the final rotation matrix. Python Code is as following:
+
+Find EE rotation matrix RPY (Roll, Pitch, Yaw):
 
     r,p,y = symbols('r p y')
 
@@ -353,8 +366,8 @@ store EE position in a matrix:
 
     ROT_EE = ROT_z * ROT_y * ROT_x
     
- Correction Needed to Account for Orientation Difference Between
- Definition of Gripper Link_G in URDF versus DH Convention:
+Correction Needed to Account for Orientation Difference Between
+Definition of Gripper Link_G in URDF versus DH Convention:
 
     ROT_corr = ROT_z.subs(y, radians(180)) * ROT_y.subs(p, radians(-90))
     ROT_EE = ROT_EE * ROT_corr
@@ -366,7 +379,17 @@ substiute the r p y to find the ee rotation matrix:
 Calculate Wrest Center:
 
     WC = EE - (0.303) * ROT_EE[:,2]
- 
+
+WC is now having position of wrist center (Wx, Wy, Wz).
+
+To find 𝜃1, we need to project Wz onto the ground plane Thus,
+
+   #### Theta1=atan2(Wy,Wx)
+
+Calculate theta1:
+
+    theta1 = atan2(WC[1],WC[0])
+
 find the 3rd side of the triangle:
 
     side_A = 1.501
