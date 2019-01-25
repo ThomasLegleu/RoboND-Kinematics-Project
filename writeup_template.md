@@ -453,17 +453,17 @@ goal: find the final three joint variables.
 
 Using the individual DH transforms we can obtain the resultant transform and hence resultant rotation by:
 
-       R0_6 = R0_1*R1_2*R2_3*R3_4*R4_5*R5_6
+#### R0_6 = R0_1*R1_2*R2_3*R3_4*R4_5*R5_6
 
 Since the overall RPY (Roll Pitch Yaw) rotation between base_link and gripper_link must be equal to the product of individual rotations between respective links, following holds true:
 
-        R0_6 = Rrpy
+##### R0_6 = Rrpy
 
 Rrpy = Homogeneous RPY rotation between base_link and gripper_link as calculated above.
 
 We can substitute the values we calculated for joints 1 to 3 in their respective individual rotation matrices and pre-multiply both sides of the above equation by inv(R0_3) which leads to:
 
-        R3_6 = inv(R0_3) * Rrpy
+#### 3_6 = inv(R0_3) * Rrpy
 
     
 Extract rotation matrix R0_3 from transformation matrix T0_3 the substitute angles q1-3:
@@ -477,6 +477,8 @@ Get rotation matrix R3_6 from (transpose of R0_3 * R_EE):
     
 Euler angles from rotation matrix:
 
+/////// look at this in a little bit more depth(see video and powerpoint notes)////////////////////////
+
     theta5 = atan2(sqrt(R3_6[0,2]*R3_6[0,2] + R3_6[2,2]*R3_6[2,2]),R3_6[1,2])
     
 select best solution based on theta5:
@@ -487,7 +489,90 @@ select best solution based on theta5:
     else:
         theta4 = atan2(R3_6[2,2], -R3_6[0,2])
         theta6 = atan2(-R3_6[1,1],R3_6[1,0]) 
-        
+ 
+ 
+ Testing the Inverse Kinematic Equation through the IK_debug.py: 
+ 
+ Test 1 output:
+ 
+    Total run time to calculate joint angles from pose is 1.1260 seconds
+
+    Wrist error for x position is: 0.00000046
+    Wrist error for y position is: 0.00000032
+    Wrist error for z position is: 0.00000545
+    Overall wrist offset is: 0.00000548 units
+
+    Theta 1 error is: 0.00093770
+    Theta 2 error is: 0.00181024
+    Theta 3 error is: 0.00205031
+    Theta 4 error is: 0.00172067
+    Theta 5 error is: 0.00197873
+    Theta 6 error is: 0.00251871
+
+    **These theta errors may not be a correct representation of your code, due to the fact            
+    that the arm can have muliple positions. It is best to add your forward kinmeatics to            
+    confirm whether your code is working or not**
+
+
+    End effector error for x position is: 0.00002010
+    End effector error for y position is: 0.00001531
+    End effector error for z position is: 0.00002660
+    Overall end effector offset is: 0.00003668 units 
+ 
+ 
+ Test 2 output: 
+ 
+    Total run time to calculate joint angles from pose is 1.4115 seconds
+
+    Wrist error for x position is: 0.00000046
+    Wrist error for y position is: 0.00000032
+    Wrist error for z position is: 0.00000545
+    Overall wrist offset is: 0.00000548 units
+
+    Theta 1 error is: 0.00093770
+    Theta 2 error is: 0.00181024
+    Theta 3 error is: 0.00205031
+    Theta 4 error is: 0.00172067
+    Theta 5 error is: 0.00197873
+    Theta 6 error is: 0.00251871
+
+    **These theta errors may not be a correct representation of your code, due to the fact            
+    that the arm can have muliple positions. It is best to add your forward kinmeatics to            
+    confirm whether your code is working or not**
+
+
+    End effector error for x position is: 0.00002010
+    End effector error for y position is: 0.00001531
+    End effector error for z position is: 0.00002660
+    Overall end effector offset is: 0.00003668 units
+    
+Test 3 output: 
+
+    Total run time to calculate joint angles from pose is 1.1756 seconds
+
+    Wrist error for x position is: 0.00000503
+    Wrist error for y position is: 0.00000512
+    Wrist error for z position is: 0.00000585
+    Overall wrist offset is: 0.00000926 units
+
+    Theta 1 error is: 0.00136747
+    Theta 2 error is: 0.00325738
+    Theta 3 error is: 0.00339563
+    Theta 4 error is: 6.53212647
+    Theta 5 error is: 0.39551490
+    Theta 6 error is: 6.86340402
+
+    **These theta errors may not be a correct representation of your code, due to the fact            
+    that the arm can have muliple positions. It is best to add your forward kinmeatics to            
+    confirm whether your code is working or not**
+
+
+    End effector error for x position is: 0.04253562
+    End effector error for y position is: 0.03889778
+    End effector error for z position is: 0.12694560
+    Overall end effector offset is: 0.13941844 units 
+
+    
         
 
 #### 1. Fill in the `IK_server.py` file with properly commented python code for calculating Inverse Kinematics based on previously performed Kinematic Analysis. Your code must guide the robot to successfully complete 8/10 pick and place cycles. Briefly discuss the code you implemented and your results. 
