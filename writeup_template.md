@@ -305,14 +305,6 @@ test_01 all thetas = 0:
 
 #### 3. Decouple Inverse Kinematics problem into Inverse Position Kinematics and inverse Orientation Kinematics; doing so derive the equations to calculate all individual joint angles.
 
-And here's where you can draw out and show your math for the derivation of your theta angles. 
-
-![alt text][image2]
-
-### Project Implementation
-
-#### 1. Fill in the `IK_server.py` file with properly commented python code for calculating Inverse Kinematics based on previously performed Kinematic Analysis. Your code must guide the robot to successfully complete 8/10 pick and place cycles. Briefly discuss the code you implemented and your results. 
-
 #### Inverse Position
 
 First step is to get the end-effector position(Px, Py, Pz) and orientation (Roll, Pitch, Yaw) from the test cases data class 
@@ -341,9 +333,6 @@ We will need rotation matrix for the end-effector:
 
   #### R_rpy = Rot(Z, yaw) * Rot(Y, pitch) * Rot(X, roll)
 
-and orientation difference correction matrix (Rot_corr) as earlier discussed in FK section.
-
-  #### R_EE = R_rpy * R_corr
 
 Find EE rotation matrix RPY (Roll, Pitch, Yaw):
 
@@ -364,6 +353,11 @@ Find EE rotation matrix RPY (Roll, Pitch, Yaw):
 
     ROT_EE = ROT_z * ROT_y * ROT_x
     
+
+orientation difference correction matrix (Rot_corr) as earlier discussed in FK section.
+
+  #### R_EE = R_rpy * R_corr    
+    
 Correction Needed to Account for Orientation Difference Between
 Definition of Gripper Link_G in URDF versus DH Convention:
 
@@ -374,36 +368,83 @@ substiute the r p y to find the ee rotation matrix:
 
     ROT_EE = ROT_EE.subs({'r': roll, 'p': pitch, 'y': yaw})
 
+
+Now lets symbolically define our homogeneous transform as following:
+
+
+///////////// equation_01
+
+
+where l, m and n are orthonormal vectors representing the end-effector orientation along X, Y, Z axes of the local coordinate frame.
+
+Since n is the vector along the z-axis of the gripper_link, we can say the following
+
+Px, Py, Pz = end-effector positions
+
+Wx, Wy, Wz = wrist positions
+
+d6 = from DH table
+
+_l_ = end-effector length
+
+nx, ny, and nz values from this Rrpy matrix to obtain the wrist center position.
+
+we can say the following: 
+ 
+///////////// equation_02
+
+
 Calculate Wrest Center:
 
     WC = EE - (0.303) * ROT_EE[:,2]
+    
 
-WC is now having position of wrist center (Wx, Wy, Wz).
+WC now has position of wrist center (Wx, Wy, Wz).
 
-To find 𝜃1, we need to project Wz onto the ground plane Thus,
+Now we can start to define out theta values through trignometry and linear algebra:
+
+To find 𝜃1, we need to project Wz onto the ground plane:
 
    #### Theta1=atan2(Wy,Wx)
 
 Calculate theta1:
 
     theta1 = atan2(WC[1],WC[0])
+    
+To find 𝜃2 and 𝜃3 , we will need to isolate the proper triangle associated with the angles and do some trigonometry:
 
-find the 3rd side of the triangle:
+A = d4 = 1.5
+C = a2 = 1.25
+3rd side = B  needs to be calculated as follows:
+
+
+//// image 3
+
 
     side_A = 1.501
     side_C = 1.25
     side_B = sqrt(pow((sqrt(WC[0]*WC[0] + WC[1]*WC[1]) - 0.35), 2) + pow((WC[2] - 0.75), 2))
 
-Cosine Laws SSS to find all inner angles of the triangle:
+All three sides of the triangle are known. To calculate all of the three inner angles of the triangle from the known three sides use Cosine Laws SSS:
+
+
+///////////////// image_4
+
+
+find the interior angles of a,b,c:
 
     a = acos((side_B*side_B + side_C*side_C - side_A*side_A) / (2*side_B*side_C))
     b = acos((side_A*side_A + side_C*side_C - side_B*side_B) / (2*side_A*side_C))
     c = acos((side_A*side_A + side_B*side_B - side_C*side_C) / (2*side_A*side_B))
 
-Find theta2 and theta3:
+ now find theta2 and theta3:
 
     theta2 = pi/2 - a - atan2(WC[2]-0.75, sqrt(WC[0]*WC[0]+WC[1]*WC[1])-0.35)
     theta3 = pi/2 - (b+0.036) # 0.036 accounts for sag in link4 of -0.054m
+    
+
+//////////////// diagram image showing how to find theta2 and theta3
+
     
 Extract rotation matrix R0_3 from transformation matrix T0_3 the substitute angles q1-3:
 
@@ -426,8 +467,11 @@ select best solution based on theta5:
     else:
         theta4 = atan2(R3_6[2,2], -R3_6[0,2])
         theta6 = atan2(-R3_6[1,1],R3_6[1,0]) 
+        
+        
 
+#### 1. Fill in the `IK_server.py` file with properly commented python code for calculating Inverse Kinematics based on previously performed Kinematic Analysis. Your code must guide the robot to successfully complete 8/10 pick and place cycles. Briefly discuss the code you implemented and your results. 
 
-
+### Project Implementation
 
 
