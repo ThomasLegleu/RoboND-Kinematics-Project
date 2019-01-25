@@ -399,8 +399,6 @@ Calculate Wrest Center:
     WC = EE - (0.303) * ROT_EE[:,2]
     
 
-WC now has position of wrist center (Wx, Wy, Wz).
-
 Now we can start to define out theta values through trignometry and linear algebra:
 
 To find 𝜃1, we need to project Wz onto the ground plane:
@@ -414,7 +412,9 @@ Calculate theta1:
 To find 𝜃2 and 𝜃3 , we will need to isolate the proper triangle associated with the angles and do some trigonometry:
 
 A = d4 = 1.5
+
 C = a2 = 1.25
+
 3rd side = B  needs to be calculated as follows:
 
 
@@ -437,13 +437,33 @@ find the interior angles of a,b,c:
     b = acos((side_A*side_A + side_C*side_C - side_B*side_B) / (2*side_A*side_C))
     c = acos((side_A*side_A + side_B*side_B - side_C*side_C) / (2*side_A*side_B))
 
- now find theta2 and theta3:
+ find theta2 and theta3:
 
     theta2 = pi/2 - a - atan2(WC[2]-0.75, sqrt(WC[0]*WC[0]+WC[1]*WC[1])-0.35)
     theta3 = pi/2 - (b+0.036) # 0.036 accounts for sag in link4 of -0.054m
     
 
 //////////////// diagram image showing how to find theta2 and theta3
+
+
+
+#### Inverse Orientation:
+ 
+goal: find the final three joint variables.
+
+Using the individual DH transforms we can obtain the resultant transform and hence resultant rotation by:
+
+       R0_6 = R0_1*R1_2*R2_3*R3_4*R4_5*R5_6
+
+Since the overall RPY (Roll Pitch Yaw) rotation between base_link and gripper_link must be equal to the product of individual rotations between respective links, following holds true:
+
+        R0_6 = Rrpy
+
+Rrpy = Homogeneous RPY rotation between base_link and gripper_link as calculated above.
+
+We can substitute the values we calculated for joints 1 to 3 in their respective individual rotation matrices and pre-multiply both sides of the above equation by inv(R0_3) which leads to:
+
+        R3_6 = inv(R0_3) * Rrpy
 
     
 Extract rotation matrix R0_3 from transformation matrix T0_3 the substitute angles q1-3:
