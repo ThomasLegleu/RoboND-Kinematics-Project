@@ -381,11 +381,11 @@ Calculate Wrest Center:
     WC = EE - (0.303) * ROT_EE[:,2]
     
 
-Now we can start to define out theta values through trignometry:
+Define out theta values through trignometry:
 
-To find 𝜃1, we need to project Wz onto the ground plane:
+To find 𝜃1, project Wz onto the ground plane:
 
-![alt text](IMAGES/image2 (2).jpg) 
+![alt text](IMAGES/Im2.jpg) 
 
 Calculate theta1:
 
@@ -397,7 +397,7 @@ A = d4 = 1.5
 
 C = a2 = 1.25
 
-3rd side = B  needs to be calculated as follows:
+3rd side = B needs to be calculated as follows:
 
 ![alt text](IMAGES/3.png)
 
