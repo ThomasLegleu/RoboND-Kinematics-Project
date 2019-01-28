@@ -385,7 +385,7 @@ Now we can start to define out theta values through trignometry:
 
 To find 𝜃1, we need to project Wz onto the ground plane:
 
-![alt text](IMAGES/image2 (2).png) 
+![alt text](IMAGES/image2 (2).jpg) 
 
 Calculate theta1:
 
