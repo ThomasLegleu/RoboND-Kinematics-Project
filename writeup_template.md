@@ -36,7 +36,7 @@ You're reading it!
 
 Clone this repository to your home directory:
 
-    $ git clone https://github.com/mkhuthir/RoboND-Kinematics-Project.git ~/catkin_ws 
+    $ ggit clone https://github.com/udacity/RoboND-Kinematics-Project.git
 
 Install missing ROS dependencies using the rosdep install command:
 
@@ -374,7 +374,7 @@ _l_ = end-effector length
 
 nx, ny, and nz values from this Rrpy matrix to obtain the wrist center position.
  
-/![alt text](IMAGES/2.png) 
+![alt text](IMAGES/2.png) 
 
 Calculate Wrest Center:
 
@@ -385,7 +385,7 @@ Now we can start to define out theta values through trignometry:
 
 To find 𝜃1, we need to project Wz onto the ground plane:
 
-/![alt text](IMAGES/image2 (2).png) 
+![alt text](IMAGES/image2 (2).png) 
 
 Calculate theta1:
 
@@ -399,7 +399,7 @@ C = a2 = 1.25
 
 3rd side = B  needs to be calculated as follows:
 
-/![alt text](IMAGES/3.png)
+![alt text](IMAGES/3.png)
 
 
     side_A = 1.501
@@ -409,7 +409,7 @@ C = a2 = 1.25
 All three sides of the triangle are known. To calculate all of the three inner angles of the triangle from the known three sides use Cosine Laws SSS:
 
 
-/![alt text](IMAGES/4.png) 
+![alt text](IMAGES/4.png) 
 
 
 find the interior angles of a,b,c:
@@ -418,7 +418,7 @@ find the interior angles of a,b,c:
     b = acos((side_A*side_A + side_C*side_C - side_B*side_B) / (2*side_A*side_C))
     c = acos((side_A*side_A + side_B*side_B - side_C*side_C) / (2*side_A*side_B))
 
-/![alt text](IMAGES/image1.jpg)
+![alt text](IMAGES/image1.jpg)
 
 find theta2 and theta3:
 
