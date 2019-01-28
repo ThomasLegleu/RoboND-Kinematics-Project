@@ -358,7 +358,7 @@ substiute the r p y to find the ee rotation matrix:
 
 Symbolically define our homogeneous transform as following:
 
-![alt text](IMAGES/1.PNG)  
+![alt text](IMAGES/1.png)  
 
 where l, m and n are orthonormal vectors representing the end-effector orientation along X, Y, Z axes of the local coordinate frame.
 
