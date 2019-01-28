@@ -141,15 +141,11 @@ URDF joint positions and orientations extraction table:
 
 Translate x and z coordinates into link length and link offset for dh parameter table:
 
-drawing one here !!!!!!!!
-
-
+![alt text](IMAGES/image4.png)
 
 show all the DH Parameters in respect to a 6DOF drawing: 
 
-
-drawing two here !!!!!!!!!!!!!!! 
-
+![alt text](IMAGES/image3.png)
 
 Elements of the DH Parameter table for producing individual transforms and homogeneous transform:
 
@@ -228,7 +224,6 @@ Generate function to return the homogeneous transform between each link:
 
         return h_t
 
-
 Perform the homogeneous transform between the links:
 
     T0_T1 = h_transform(alpha0,a0,d1,q1).subs(dh_Params)
@@ -239,9 +234,7 @@ Perform the homogeneous transform between the links:
     T5_T6 = h_transform(alpha5,a5,d6,q6).subs(dh_Params)
     T6_T7 = h_transform(alpha6,a6,d7,q7).subs(dh_Params)
 
-
 Get the composition of all transforms from base to gripper multiply the individual matrices: 
-
 
     T0_T2 = ( T0_T1 * T1_T2 )
     T0_T3 = ( T0_T2 * T2_T3 )
@@ -250,9 +243,7 @@ Get the composition of all transforms from base to gripper multiply the individu
     T0_T6 = ( T0_T5 * T5_T6 )
     T0_T7 = ( T0_T6 * T6_T7 )
 
-
 Correction Needed to Account for Orientation Difference between definition of Gripper Link_G in URDF versus DH Convention:
-
 
     R_y = Matrix([[ cos(-pi/2.),        0, sin(-pi/2.), 0 ],
                   [           0,       1.,           0, 0 ],
@@ -265,7 +256,6 @@ Correction Needed to Account for Orientation Difference between definition of Gr
                   [           0,        0,           0, 1.]])
 
     R_corr = (R_z * R_y)
-
 
 Total Homogeneous Transform Between (Base) Link_0 and (End Effector) Link_7 with orientation correction applied:
 
@@ -300,8 +290,6 @@ test_01 all thetas = 0:
  image from rviz joint information : 
 
  ![alt text](IMAGES/test_2fk.PNG)
-
-
 
 #### 3. Decouple Inverse Kinematics problem into Inverse Position Kinematics and inverse Orientation Kinematics; doing so derive the equations to calculate all individual joint angles.
 
@@ -368,12 +356,9 @@ substiute the r p y to find the ee rotation matrix:
 
     ROT_EE = ROT_EE.subs({'r': roll, 'p': pitch, 'y': yaw})
 
+Symbolically define our homogeneous transform as following:
 
-Now lets symbolically define our homogeneous transform as following:
-
-
-///////////// equation_01
-
+![alt text](IMAGES/1.PNG)  ///////////// equation_01
 
 where l, m and n are orthonormal vectors representing the end-effector orientation along X, Y, Z axes of the local coordinate frame.
 
@@ -389,7 +374,7 @@ _l_ = end-effector length
 
 nx, ny, and nz values from this Rrpy matrix to obtain the wrist center position.
  
-///////////// equation_02
+/![alt text](IMAGES/2.PNG) //////////// equation_02
 
 Calculate Wrest Center:
 
@@ -400,7 +385,7 @@ Now we can start to define out theta values through trignometry:
 
 To find 𝜃1, we need to project Wz onto the ground plane:
 
-///// show the drawing theta1 sketch
+/![alt text](IMAGES/image2 (2).PNG) ///// show the drawing theta1 sketch
 
 Calculate theta1:
 
@@ -414,8 +399,7 @@ C = a2 = 1.25
 
 3rd side = B  needs to be calculated as follows:
 
-
-//// image 3
+/![alt text](IMAGES/3.PNG)
 
 
     side_A = 1.501
@@ -425,7 +409,7 @@ C = a2 = 1.25
 All three sides of the triangle are known. To calculate all of the three inner angles of the triangle from the known three sides use Cosine Laws SSS:
 
 
-///////////////// image_4
+/![alt text](IMAGES/4.PNG) 
 
 
 find the interior angles of a,b,c:
@@ -434,7 +418,7 @@ find the interior angles of a,b,c:
     b = acos((side_A*side_A + side_C*side_C - side_B*side_B) / (2*side_A*side_C))
     c = acos((side_A*side_A + side_B*side_B - side_C*side_C) / (2*side_A*side_B))
 
-diagram to find theta2 and theta3:
+/![alt text](IMAGES/image1.PNG)
 
 find theta2 and theta3:
 
@@ -469,8 +453,6 @@ Get rotation matrix R3_6 from (transpose of R0_3 * R_EE):
     R3_6 = R0_3.inv("LU") * ROT_EE
     
 Euler angles from rotation matrix:
-
-/////// look at this in a little bit more depth(see video and powerpoint notes)////////////////////////
 
     theta5 = atan2(sqrt(R3_6[0,2]*R3_6[0,2] + R3_6[2,2]*R3_6[2,2]),R3_6[1,2])
     
@@ -566,10 +548,46 @@ Test 3 output:
     Overall end effector offset is: 0.13941844 units 
 
     
-        
-
 #### 1. Fill in the `IK_server.py` file with properly commented python code for calculating Inverse Kinematics based on previously performed Kinematic Analysis. Your code must guide the robot to successfully complete 8/10 pick and place cycles. Briefly discuss the code you implemented and your results. 
 
-### Project Implementation
+### Ik_server.py Project Implementation:
+
+Steps for running the final ik based on previously performed Kinnematic Analysis:
+
+run roscore:
+    
+    roscore
+    
+run the safe spawner script in a new terminal:
+
+    ./safe_spawner.sh
+
+launch the the proper ik_server.py
+
+    rosrun kuka_arm IK_server.py
+
+For the IK_server.py I moved the forward kinematics and the ee orientation to above the for loop which solves for the inverse knmetics. It certain areas I hard coded the proper numbers in to speed up run and simulation time. THe lag is not bad but could be optimized even further.
+
+#### General: 
+
+- All in all the testing an implemetation of the final ROS IK_server.py went smoothly.
+- I was able to use all test files for the forward and inverse kinematics as well as run the python script IK_server.py for deploying my code for solving the inverse kinematics problem.
+- I ran into a problem when running ROS in the fact that it could not locate the proper files when running demos and executing them so I had to run the following commands in the terminal for sourcing purposes before ROS Was able to access the proper files:
+
+        robond@udacity:~$ cd ~/catkin_ws/
+
+        robond@udacity:~/catkin_ws$ echo $ROS_PACKAGE_PATH
+
+        /opt/ros/kinetic/share
+
+        robond@udacity:~/catkin_ws$ source devel/setup.bash
+
+        robond@udacity:~/catkin_ws$ echo $ROS_PACKAGE_PATH
+
+        /home/robond/catkin_ws/src:/opt/ros/kinetic/share
+        
+ - The inverse kinematics seemed to be working well and the robot was able to pick and place the proper objects. THe motion of the robot was working in manner that seemed ready for real world testing.
+ 
+        
 
 
