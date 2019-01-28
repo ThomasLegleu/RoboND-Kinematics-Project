@@ -142,7 +142,7 @@ URDF joint positions and orientations extraction table:
 Translate x and z coordinates into link length and link offset for dh parameter table:
 
 drawing one here !!!!!!!!
-![alt text](IMAGES/color_thresh.JPG)
+
 
 
 show all the DH Parameters in respect to a 6DOF drawing: 
@@ -153,18 +153,18 @@ drawing two here !!!!!!!!!!!!!!!
 
 Elements of the DH Parameter table for producing individual transforms and homogeneous transform:
 
-  Origin O(i) = intersection between Xi and Zi axis
+    Origin O(i) = intersection between Xi and Zi axis
 
-  a = Link Length: a(i-1) = Zi-1 - Zi along the X(i-1) axis
+    a = Link Length: a(i-1) = Zi-1 - Zi along the X(i-1) axis
 
-  d = Link Offset: d(i) = X(i-1) - X(i) along Z(i) axis
+    d = Link Offset: d(i) = X(i-1) - X(i) along Z(i) axis
 
-  alpha = Link Twist: alpha(i-1) = angle from Z(i-1) to Z(i) measured about Xi-1 using right hand rule
+    alpha = Link Twist: alpha(i-1) = angle from Z(i-1) to Z(i) measured about Xi-1 using right hand rule
 
-  q = theta = Joint Angle: theta(i) = angle from X(i-1) to X(i) measured about Zi using right hand rule. all joint angles     will be zero at initial Robot state in KR210 except joint 2 which has a -90 degree constant offset between X(1) and X(2).
+    q = theta = Joint Angle: theta(i) = angle from X(i-1) to X(i) measured about Zi using right hand rule. all joint angles     will be zero at initial Robot state in KR210 except joint 2 which has a -90 degree constant offset between X(1) and         X(2).
 
 
-Begin the coding by importing all the stuff:
+Begin the coding by importing all the proper libraries:
 
     import numpy as np
     from numpy import array
@@ -208,10 +208,15 @@ Set the dh parameter information as a dictionary:
 #### 2. Using the DH parameter table you derived earlier, create individual transformation matrices about each joint. In addition, also generate a generalized homogeneous transform between base_link and gripper_link using only end-effector(gripper) pose.
 
 
+DH parameter table allows us to generate individual transforms between various links:
+
+![alt text](IMAGES/fw_tf_3parts.png)
+
+Transform from one frame to another using the following matrix:
+
+![alt text](IMAGES/fw_tf_mat1.png)
 
 Generate function to return the homogeneous transform between each link:
-
-image one!!!!!
 
 
     def h_transform(alpha,a,d,q):
@@ -266,43 +271,305 @@ Total Homogeneous Transform Between (Base) Link_0 and (End Effector) Link_7 with
 
     T0_T7_corr = (T0_T7 * R_corr)
     
-Test the results:      
+#### Test the results: 
 
-test_01: 
+launch the fk simulator: 
+
+    $ roslaunch kuka_arm forward_kinematics.launch
+
+test_01 all thetas = 0: 
 
     T0_7 = T0_T7_corr.evalf(subs={q1: 0, q2: 0, q3: 0, q4: 0, q5: 0, q6: 0})
     
  image from python testing: 
+ 
+ ![alt text](IMAGES/test_01python.PNG)
     
  image from rviz joint information : 
  
- test_02: 
+ ![alt text](IMAGES/test_1fk.PNG)
+ 
+ test_02 theta 1 = 0.77 and the rest of thetas = 0 : 
  
     T0_7 = T0_T7_corr.evalf(subs={q1: 0.77, q2: 0, q3: 0, q4: 0, q5: 0, q6: 0})
     
  image from python testing: 
-    
+ 
+ ![alt text](IMAGES/fk_test_2.PNG)
+ 
  image from rviz joint information : 
 
-
+ ![alt text](IMAGES/test_2fk.PNG)
 
 
 
 #### 3. Decouple Inverse Kinematics problem into Inverse Position Kinematics and inverse Orientation Kinematics; doing so derive the equations to calculate all individual joint angles.
 
-And here's where you can draw out and show your math for the derivation of your theta angles. 
+#### Inverse Position
 
-![alt text][image2]
+First step is to get the end-effector position(Px, Py, Pz) and orientation (Roll, Pitch, Yaw) from the test cases data class 
+ 
+ Requested end-effector (EE) position:
+ 
+    px = req.poses[x].position.x
+    py = req.poses[x].position.y
+    pz = req.poses[x].position.z
+    
+store EE position in a matrix:
 
-### Project Implementation
+    EE = Matrix([[px],
+                 [py],
+                 [pz]])
+
+Requested end-effector (EE) orientation (roll pitch yaw that will be used to identify the rotation matrix for the ee):
+ 
+    (roll,pitch,yaw) = tf.transformations.euler_from_quaternion(
+        [req.poses[x].orientation.x,
+         req.poses[x].orientation.y,
+         req.poses[x].orientation.z,
+         req.poses[x].orientation.w])
+         
+We will need rotation matrix for the end-effector:
+
+  #### R_rpy = Rot(Z, yaw) * Rot(Y, pitch) * Rot(X, roll)
+
+
+Find EE rotation matrix RPY (Roll, Pitch, Yaw):
+
+    r,p,y = symbols('r p y')
+
+    # Roll
+    ROT_x = Matrix([[       1,       0,       0],
+                    [       0,  cos(r), -sin(r)],
+                    [       0,  sin(r),  cos(r)]])
+    # Pitch
+    ROT_y = Matrix([[  cos(p),       0,  sin(p)],
+                    [       0,       1,       0],
+                    [ -sin(p),       0,  cos(p)]])
+    # Yaw
+    ROT_z = Matrix([[  cos(y), -sin(y),       0],
+                    [  sin(y),  cos(y),       0],
+                    [       0,       0,       1]])
+
+    ROT_EE = ROT_z * ROT_y * ROT_x
+    
+
+orientation difference correction matrix (Rot_corr) as earlier discussed in FK section.
+
+  #### R_EE = R_rpy * R_corr    
+    
+Correction Needed to Account for Orientation Difference Between
+Definition of Gripper Link_G in URDF versus DH Convention:
+
+    ROT_corr = ROT_z.subs(y, radians(180)) * ROT_y.subs(p, radians(-90))
+    ROT_EE = ROT_EE * ROT_corr
+
+substiute the r p y to find the ee rotation matrix:
+
+    ROT_EE = ROT_EE.subs({'r': roll, 'p': pitch, 'y': yaw})
+
+
+Now lets symbolically define our homogeneous transform as following:
+
+
+///////////// equation_01
+
+
+where l, m and n are orthonormal vectors representing the end-effector orientation along X, Y, Z axes of the local coordinate frame.
+
+Since n is the vector along the z-axis of the gripper_link, we can say the following
+
+Px, Py, Pz = end-effector positions
+
+Wx, Wy, Wz = wrist positions
+
+d6 = from DH table
+
+_l_ = end-effector length
+
+nx, ny, and nz values from this Rrpy matrix to obtain the wrist center position.
+ 
+///////////// equation_02
+
+Calculate Wrest Center:
+
+    WC = EE - (0.303) * ROT_EE[:,2]
+    
+
+Now we can start to define out theta values through trignometry:
+
+To find 𝜃1, we need to project Wz onto the ground plane:
+
+///// show the drawing theta1 sketch
+
+Calculate theta1:
+
+    theta1 = atan2(WC[1],WC[0])
+    
+To find 𝜃2 and 𝜃3 , we will need to isolate the proper triangle associated with the angles:
+
+A = d4 = 1.5
+
+C = a2 = 1.25
+
+3rd side = B  needs to be calculated as follows:
+
+
+//// image 3
+
+
+    side_A = 1.501
+    side_C = 1.25
+    side_B = sqrt(pow((sqrt(WC[0]*WC[0] + WC[1]*WC[1]) - 0.35), 2) + pow((WC[2] - 0.75), 2))
+
+All three sides of the triangle are known. To calculate all of the three inner angles of the triangle from the known three sides use Cosine Laws SSS:
+
+
+///////////////// image_4
+
+
+find the interior angles of a,b,c:
+
+    a = acos((side_B*side_B + side_C*side_C - side_A*side_A) / (2*side_B*side_C))
+    b = acos((side_A*side_A + side_C*side_C - side_B*side_B) / (2*side_A*side_C))
+    c = acos((side_A*side_A + side_B*side_B - side_C*side_C) / (2*side_A*side_B))
+
+diagram to find theta2 and theta3:
+
+find theta2 and theta3:
+
+    theta2 = pi/2 - a - atan2(WC[2]-0.75, sqrt(WC[0]*WC[0]+WC[1]*WC[1])-0.35)
+    theta3 = pi/2 - (b+0.036) # 0.036 accounts for sag in link4 of -0.054m
+
+#### Inverse Orientation:
+ 
+goal: find the final three joint variables 𝜃4,𝜃5 and 𝜃6.
+
+Using the individual DH transforms we can obtain the resultant transform and hence resultant rotation by:
+
+#### R0_6 = R0_1*R1_2*R2_3*R3_4*R4_5*R5_6
+
+Since the overall RPY (Roll Pitch Yaw) rotation between base_link and gripper_link must be equal to the product of individual rotations between respective links, following holds true:
+
+##### R0_6 = Rrpy
+
+Rrpy = Homogeneous RPY rotation between base_link and gripper_link
+
+We can substitute the values we calculated for joints 1 to 3 in their respective individual rotation matrices and pre-multiply both sides of the above equation by inv(R0_3) which leads to:
+
+#### 3_6 = inv(R0_3) * Rrpy
+
+Extract rotation matrix R0_3 from transformation matrix T0_3 the substitute angles q1-3:
+
+    R0_3 = T0_T1[0:3,0:3] * T1_T2[0:3,0:3] * T2_T3[0:3,0:3]
+    R0_3 = R0_3.evalf(subs={q1: theta1, q2: theta2, q3:theta3})
+
+Get rotation matrix R3_6 from (transpose of R0_3 * R_EE):
+
+    R3_6 = R0_3.inv("LU") * ROT_EE
+    
+Euler angles from rotation matrix:
+
+/////// look at this in a little bit more depth(see video and powerpoint notes)////////////////////////
+
+    theta5 = atan2(sqrt(R3_6[0,2]*R3_6[0,2] + R3_6[2,2]*R3_6[2,2]),R3_6[1,2])
+    
+select best solution based on theta5:
+
+    if (theta5 > pi) :
+        theta4 = atan2(-R3_6[2,2], R3_6[0,2]) ## REVIEW THIS LINE SOLVING FOR THETA
+        theta6 = atan2(R3_6[1,1],-R3_6[1,0])
+    else:
+        theta4 = atan2(R3_6[2,2], -R3_6[0,2])
+        theta6 = atan2(-R3_6[1,1],R3_6[1,0]) 
+ 
+ 
+ Testing the Inverse Kinematic Equation through the IK_debug.py: 
+ 
+ Test 1 output:
+ 
+    Total run time to calculate joint angles from pose is 1.1260 seconds
+
+    Wrist error for x position is: 0.00000046
+    Wrist error for y position is: 0.00000032
+    Wrist error for z position is: 0.00000545
+    Overall wrist offset is: 0.00000548 units
+
+    Theta 1 error is: 0.00093770
+    Theta 2 error is: 0.00181024
+    Theta 3 error is: 0.00205031
+    Theta 4 error is: 0.00172067
+    Theta 5 error is: 0.00197873
+    Theta 6 error is: 0.00251871
+
+    **These theta errors may not be a correct representation of your code, due to the fact            
+    that the arm can have muliple positions. It is best to add your forward kinmeatics to            
+    confirm whether your code is working or not**
+
+
+    End effector error for x position is: 0.00002010
+    End effector error for y position is: 0.00001531
+    End effector error for z position is: 0.00002660
+    Overall end effector offset is: 0.00003668 units 
+ 
+ 
+ Test 2 output: 
+ 
+    Total run time to calculate joint angles from pose is 1.4115 seconds
+
+    Wrist error for x position is: 0.00000046
+    Wrist error for y position is: 0.00000032
+    Wrist error for z position is: 0.00000545
+    Overall wrist offset is: 0.00000548 units
+
+    Theta 1 error is: 0.00093770
+    Theta 2 error is: 0.00181024
+    Theta 3 error is: 0.00205031
+    Theta 4 error is: 0.00172067
+    Theta 5 error is: 0.00197873
+    Theta 6 error is: 0.00251871
+
+    **These theta errors may not be a correct representation of your code, due to the fact            
+    that the arm can have muliple positions. It is best to add your forward kinmeatics to            
+    confirm whether your code is working or not**
+
+
+    End effector error for x position is: 0.00002010
+    End effector error for y position is: 0.00001531
+    End effector error for z position is: 0.00002660
+    Overall end effector offset is: 0.00003668 units
+    
+Test 3 output: 
+
+    Total run time to calculate joint angles from pose is 1.1756 seconds
+
+    Wrist error for x position is: 0.00000503
+    Wrist error for y position is: 0.00000512
+    Wrist error for z position is: 0.00000585
+    Overall wrist offset is: 0.00000926 units
+
+    Theta 1 error is: 0.00136747
+    Theta 2 error is: 0.00325738
+    Theta 3 error is: 0.00339563
+    Theta 4 error is: 6.53212647
+    Theta 5 error is: 0.39551490
+    Theta 6 error is: 6.86340402
+
+    **These theta errors may not be a correct representation of your code, due to the fact            
+    that the arm can have muliple positions. It is best to add your forward kinmeatics to            
+    confirm whether your code is working or not**
+
+
+    End effector error for x position is: 0.04253562
+    End effector error for y position is: 0.03889778
+    End effector error for z position is: 0.12694560
+    Overall end effector offset is: 0.13941844 units 
+
+    
+        
 
 #### 1. Fill in the `IK_server.py` file with properly commented python code for calculating Inverse Kinematics based on previously performed Kinematic Analysis. Your code must guide the robot to successfully complete 8/10 pick and place cycles. Briefly discuss the code you implemented and your results. 
 
-
-Here I'll talk about the code, what techniques I used, what worked and why, where the implementation might fail and how I might improve it if I were going to pursue this project further.  
-
-
-And just for fun, another example image:
-![alt text][image3]
+### Project Implementation
 
 
