@@ -418,7 +418,7 @@ find the interior angles of a,b,c:
     b = acos((side_A*side_A + side_C*side_C - side_B*side_B) / (2*side_A*side_C))
     c = acos((side_A*side_A + side_B*side_B - side_C*side_C) / (2*side_A*side_B))
 
-![alt text](IMAGES/im1.jpg)
+![alt text](IMAGES/im1.jpeg)
 
 find theta2 and theta3:
 
