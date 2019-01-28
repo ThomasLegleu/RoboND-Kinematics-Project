@@ -358,7 +358,7 @@ substiute the r p y to find the ee rotation matrix:
 
 Symbolically define our homogeneous transform as following:
 
-![alt text](IMAGES/1.PNG)  ///////////// equation_01
+![alt text](IMAGES/1.PNG)  
 
 where l, m and n are orthonormal vectors representing the end-effector orientation along X, Y, Z axes of the local coordinate frame.
 
@@ -374,7 +374,7 @@ _l_ = end-effector length
 
 nx, ny, and nz values from this Rrpy matrix to obtain the wrist center position.
  
-/![alt text](IMAGES/2.png) //////////// equation_02
+/![alt text](IMAGES/2.png) 
 
 Calculate Wrest Center:
 
@@ -385,7 +385,7 @@ Now we can start to define out theta values through trignometry:
 
 To find 𝜃1, we need to project Wz onto the ground plane:
 
-/![alt text](IMAGES/image2 (2).png) ///// show the drawing theta1 sketch
+/![alt text](IMAGES/image2 (2).png) 
 
 Calculate theta1:
 
