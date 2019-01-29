@@ -452,11 +452,35 @@ Get rotation matrix R3_6 from (transpose of R0_3 * R_EE):
 
     R3_6 = R0_3.inv("LU") * ROT_EE
     
+    
+Inverse orientation problem reduces to finding a set of Euler angles (θ4, θ5, θ6) that satisfy: 
+
+![alt text](IMAGES/4_1.PNG)
+
+solve this, take two cases: 
+
+   1. Both r13 and r23 are not zero (i.e. θ5 ≠ 0)… nonsingular 
+   2. θ5 = 0, thus r13 = r23 = 0… singular 
+ 
+Nonsingular case
+
+  – If θ5 ≠ 0, then r33 ≠ ±1 and:
+  
+![alt text](IMAGES/4_2.PNG) 
+
 Euler angles from rotation matrix:
 
     theta5 = atan2(sqrt(R3_6[0,2]*R3_6[0,2] + R3_6[2,2]*R3_6[2,2]),R3_6[1,2])
-    
-select best solution based on theta5:
+ 
+ two values for θ5.Using the first (s5 > 0):
+
+![alt text](IMAGES/4_3.PNG)     
+
+ Using the second value for θ5 (s5 < 0):
+ 
+![alt text](IMAGES/4_3.PNG)  
+
+ select best solution based on theta5:
 
     if (theta5 > pi) :
         theta4 = atan2(-R3_6[2,2], R3_6[0,2]) ## REVIEW THIS LINE SOLVING FOR THETA
@@ -588,6 +612,10 @@ For the IK_server.py I moved the forward kinematics and the ee orientation to ab
         
  - The inverse kinematics seemed to be working well and the robot was able to pick and place the proper objects. THe motion of the robot was working in manner that seemed ready for real world testing.
  
-        
+Link to final video: 
+
+https://vimeo.com/314067619
+
+![alt text](IMAGES/snip_forFinal.PNG)  
 
 
