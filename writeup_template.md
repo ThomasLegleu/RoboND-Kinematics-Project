@@ -572,7 +572,7 @@ For the IK_server.py I moved the forward kinematics and the ee orientation to ab
 
 - All in all the testing an implemetation of the final ROS IK_server.py went smoothly.
 - I was able to use all test files for the forward and inverse kinematics as well as run the python script IK_server.py for deploying my code for solving the inverse kinematics problem.
-- I ran into a problem when running ROS in the fact that it could not locate the proper files when running demos and executing them so I had to run the following commands in the terminal for sourcing purposes before ROS Was able to access the proper files:
+- I ran into a problem when running ROS: it could not locate the proper files when running demos and executing them so I had to run the following commands in the terminal for sourcing purposes before ROS Was able to access the proper files:
 
         robond@udacity:~$ cd ~/catkin_ws/
 
