@@ -418,7 +418,7 @@ find the interior angles of a,b,c:
     b = acos((side_A*side_A + side_C*side_C - side_B*side_B) / (2*side_A*side_C))
     c = acos((side_A*side_A + side_B*side_B - side_C*side_C) / (2*side_A*side_B))
 
-![alt text](IMAGES/image1.jpg)
+![alt text](IMAGES/im1.jpeg)
 
 find theta2 and theta3:
 
@@ -572,7 +572,7 @@ For the IK_server.py I moved the forward kinematics and the ee orientation to ab
 
 - All in all the testing an implemetation of the final ROS IK_server.py went smoothly.
 - I was able to use all test files for the forward and inverse kinematics as well as run the python script IK_server.py for deploying my code for solving the inverse kinematics problem.
-- I ran into a problem when running ROS in the fact that it could not locate the proper files when running demos and executing them so I had to run the following commands in the terminal for sourcing purposes before ROS Was able to access the proper files:
+- I ran into a problem when running ROS: it could not locate the proper files when running demos and executing them so I had to run the following commands in the terminal for sourcing purposes before ROS Was able to access the proper files:
 
         robond@udacity:~$ cd ~/catkin_ws/
 
