@@ -208,11 +208,50 @@ DH parameter table allows us to generate individual transforms between various l
 
 ![alt text](IMAGES/fw_tf_3parts.png)
 
-Transform from one frame to another using the following matrix:
+Derivation of individual transformation matrices about each joint using DH parameters
+The general expression to each joint transformation matrix is:
 
 ![alt text](IMAGES/fw_tf_mat1.png)
 
-Generate function to return the homogeneous transform between each link:
+joint transformation matrices for the entire arm:
+
+    T_0_1 = [[ cos(q1), -sin(q1),  0,     0],
+            [ sin(q1),  cos(q1),  0,     0],
+            [       0,        0,  1,  0.75],
+            [       0,        0,  0,     1]]
+            
+    T_1_2 = [[ sin(q2),  cos(q2),  0,  0.35],
+            [       0,        0,  1,     0],
+            [ cos(q2), -sin(q2),  0,     0],
+            [       0,        0,  0,     1]]
+            
+    T_2_3 = [[ cos(q3), -sin(q3),  0,  1.25],
+            [ sin(q3),  cos(q3),  0,     0],
+            [       0,        0,  1,     0],
+            [       0,        0,  0,     1]]
+            
+    T_3_4 = [[ cos(q4), -sin(q4),  0, -0.054],
+            [       0,        0,  1,    1.5],
+            [-sin(q4), -cos(q4),  0,      0],
+            [       0,        0,  0,      1]]
+            
+    T_4_5 = [[ cos(q5), -sin(q5),  0,      0],
+            [       0,        0, -1,      0],
+            [ sin(q5),  cos(q5),  0,      0],
+            [       0,        0,  0,      1]]
+            
+    T_5_6 = [[ cos(q6), -sin(q6),  0,      0],
+            [       0,        0,  1,      0],
+            [-sin(q6), -cos(q6),  0,      0],
+            [       0,        0,  0,      1]]
+            
+    T_6_7 = [[      1,      0,      0,      0],
+            [       0,      0,      0,      0],
+            [       0,      0,      1,  0.303],
+            [       0,      0,      0,      1]]        
+            
+
+function to return the individual frame transformation matrix:
 
 
     def h_transform(alpha,a,d,q):
@@ -223,8 +262,9 @@ Generate function to return the homogeneous transform between each link:
                       [                0,                 0,           0,            1]])
 
         return h_t
+        
 
-Perform the homogeneous transform between the links:
+substitute the DH parameters into the transformation matrix::
 
     T0_T1 = h_transform(alpha0,a0,d1,q1).subs(dh_Params)
     T1_T2 = h_transform(alpha1,a1,d2,q2).subs(dh_Params) 
@@ -233,6 +273,7 @@ Perform the homogeneous transform between the links:
     T4_T5 = h_transform(alpha4,a4,d5,q5).subs(dh_Params)
     T5_T6 = h_transform(alpha5,a5,d6,q6).subs(dh_Params)
     T6_T7 = h_transform(alpha6,a6,d7,q7).subs(dh_Params)
+
 
 Get the composition of all transforms from base to gripper multiply the individual matrices: 
 
@@ -317,7 +358,7 @@ Requested end-effector (EE) orientation (roll pitch yaw that will be used to ide
          req.poses[x].orientation.z,
          req.poses[x].orientation.w])
          
-We will need rotation matrix for the end-effector:
+need rotation matrix for the end-effector:
 
   #### R_rpy = Rot(Z, yaw) * Rot(Y, pitch) * Rot(X, roll)
 
