@@ -143,10 +143,6 @@ Translate x and z coordinates into link length and link offset for dh parameter 
 
 ![alt text](IMAGES/image4.jpg)
 
-show all the DH Parameters in respect to a 6DOF drawing: 
-
-![alt text](IMAGES/image3.jpg)
-
 Elements of the DH Parameter table for producing individual transforms and homogeneous transform:
 
     Origin O(i) = intersection between Xi and Zi axis
@@ -155,9 +151,16 @@ Elements of the DH Parameter table for producing individual transforms and homog
 
     d = Link Offset: d(i) = X(i-1) - X(i) along Z(i) axis
 
-    alpha = Link Twist: alpha(i-1) = angle from Z(i-1) to Z(i) measured about Xi-1 using right hand rule
+    alpha = Link Twist: alpha(i-1) = angle from Z(i-1) to Z(i) 
+    measured about Xi-1 using right hand rule
 
-    q = theta = Joint Angle: theta(i) = angle from X(i-1) to X(i) measured about Zi using right hand rule. all joint angles     will be zero at initial Robot state in KR210 except joint 2 which has a -90 degree constant offset between X(1) and         X(2).
+    q = theta = Joint Angle: theta(i) = angle from X(i-1) to X(i) measured about Zi using right hand rule. all joint angles will be
+    zero at initial Robot state in KR210 except joint 2 which has a -90 degree constant offset between X(1) and X(2).
+
+
+show all the DH Parameters in respect to a 6DOF drawing: 
+
+![alt text](IMAGES/image3.jpg)
 
 
 Begin the coding by importing all the proper libraries:
