@@ -516,7 +516,7 @@ Euler angles from rotation matrix:
 
     theta5 = atan2(sqrt(R3_6[0,2]*R3_6[0,2] + R3_6[2,2]*R3_6[2,2]),R3_6[1,2])
  
- two values for θ5.Using the first (s5 > 0):
+ two values for θ5_Using the first (s5 > 0):
 
 ![alt text](IMAGES/4_3.PNG)     
 
@@ -634,7 +634,7 @@ launch the the proper ik_server.py
 
     rosrun kuka_arm IK_server.py
 
-For the IK_server.py I moved the forward kinematics and the ee orientation to above the for loop which solves for the inverse knmetics. It certain areas I hard coded the proper numbers in to speed up run and simulation time. THe lag is not bad but could be optimized even further.
+For the IK_server.py I moved the forward kinematics and the ee orientation to above the for loop which solves for the inverse knmetics. In certain areas I hard coded the proper numbers in to speed up run and simulation time. The lag is not bad but could be optimized even further.
 
 #### General: 
 
@@ -654,7 +654,7 @@ For the IK_server.py I moved the forward kinematics and the ee orientation to ab
 
         /home/robond/catkin_ws/src:/opt/ros/kinetic/share
         
- - The inverse kinematics seemed to be working well and the robot was able to pick and place the proper objects. THe motion of the robot was working in manner that seemed ready for real world testing.
+ - The inverse kinematics seemed to be working well and the robot was able to pick and place the proper objects. The motion of the robot was working in manner that seemed ready for real world testing.
  
 Link to final video: 
 
