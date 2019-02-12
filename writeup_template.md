@@ -36,7 +36,7 @@ You're reading it!
 
 Clone this repository to your home directory:
 
-    $ ggit clone https://github.com/udacity/RoboND-Kinematics-Project.git
+    $ git clone https://github.com/udacity/RoboND-Kinematics-Project.git
 
 Install missing ROS dependencies using the rosdep install command:
 
@@ -58,15 +58,15 @@ For demo mode make sure the demo flag is set to true in inverse_kinematics.launc
     
 #### Demo Mode:
   
-To run forward kinematics test us:
+run forward kinematics test:
 
     $ roslaunch kuka_arm forward_kinematics.launch
     
-To run simulator use:
+run simulator:
 
     $ rosrun kuka_arm safe_spawner.sh
 
-To run IK Server use:
+run IK Server:
 
     $ rosrun kuka_arm IK_server.py 
 
@@ -125,7 +125,7 @@ URDF joint position and orientation extraction from the kr210.urdf.xacro file:
         <limit lower="${-350*deg}" upper="${350*deg}" effort="300" velocity="${219*deg}"/>
       </joint>
 
-URDF joint positions and orientations extraction table:
+URDF joint positions and orientations to generate an extraction table:
 
 0   | joint | parent | child | x | y | z | r | p | y
 --- | --- | --- | --- | --- |--- | --- | --- | --- | --- |
@@ -139,7 +139,7 @@ URDF joint positions and orientations extraction table:
 7 | gripper | link_6 | grip_link  | 0.193 | 0 | 0 | 0 | 0 | 0
 . | total | |  | 2.153 | 0 | 1.946 | 0 | 0 | 0
 
-Translate x and z coordinates into link length and link offset for dh parameter table:
+Translate x and z coordinates into link length and link offset for finding dh parameter table:
 
 ![alt text](IMAGES/image4.jpg)
 
@@ -147,18 +147,16 @@ Elements of the DH Parameter table for producing individual transforms and homog
 
     Origin O(i) = intersection between Xi and Zi axis
 
-    a = Link Length: a(i-1) = Zi-1 - Zi along the X(i-1) axis
+    a = Link Length: a(i-1) = Zi-1 - Zi along the X axis
 
-    d = Link Offset: d(i) = X(i-1) - X(i) along Z(i) axis
+    d = Link Offset: d(i) = Xi-1 - Xi along Z axis
 
     alpha = Link Twist: alpha(i-1) = angle from Z(i-1) to Z(i) 
-    measured about Xi-1 using right hand rule
-
-    q = theta = Joint Angle: theta(i) = angle from X(i-1) to X(i) measured about Zi using right hand rule. all joint angles will be
-    zero at initial Robot state in KR210 except joint 2 which has a -90 degree constant offset between X(1) and X(2).
+    
+    q = theta = Joint Angle: theta(i) = angle from X(i-1) to X(i) measured about Zi using right hand rule.
 
 
-show all the DH Parameters in respect to a 6DOF drawing: 
+DH Parameters in respect to a 6DOF drawing: 
 
 ![alt text](IMAGES/image3.jpg)
 
@@ -211,8 +209,7 @@ DH parameter table allows us to generate individual transforms between various l
 
 ![alt text](IMAGES/fw_tf_3parts.png)
 
-Derivation of individual transformation matrices about each joint using DH parameters
-The general expression to each joint transformation matrix is:
+Derivation of individual transformation matrices about each joint using DH parameters The general expression to each joint transformation matrix is:
 
 ![alt text](IMAGES/fw_tf_mat1.png)
 
@@ -254,7 +251,7 @@ joint transformation matrices for the entire arm:
             [       0,      0,      0,      1]]        
             
 
-function to return the individual frame transformation matrix:
+return the individual frame homogeneous transformation matrix:
 
 
     def h_transform(alpha,a,d,q):
@@ -339,7 +336,7 @@ test_01 all thetas = 0:
 
 #### Inverse Position
 
-First step is to get the end-effector position(Px, Py, Pz) and orientation (Roll, Pitch, Yaw) from the test cases data class 
+get the end-effector position(Px, Py, Pz) and orientation (Roll, Pitch, Yaw) from the test cases: 
  
  Requested end-effector (EE) position:
  
@@ -353,7 +350,7 @@ store EE position in a matrix:
                  [py],
                  [pz]])
 
-Requested end-effector (EE) orientation (roll pitch yaw that will be used to identify the rotation matrix for the ee):
+Requested end-effector (EE) orientation:
  
     (roll,pitch,yaw) = tf.transformations.euler_from_quaternion(
         [req.poses[x].orientation.x,
@@ -361,7 +358,7 @@ Requested end-effector (EE) orientation (roll pitch yaw that will be used to ide
          req.poses[x].orientation.z,
          req.poses[x].orientation.w])
          
-need rotation matrix for the end-effector:
+rotation matrix for the end-effector:
 
   #### R_rpy = Rot(Z, yaw) * Rot(Y, pitch) * Rot(X, roll)
 
@@ -386,7 +383,7 @@ Find EE rotation matrix RPY (Roll, Pitch, Yaw):
     ROT_EE = ROT_z * ROT_y * ROT_x
     
 
-orientation difference correction matrix (Rot_corr) as earlier discussed in FK section.
+orientation difference correction matrix (Rot_corr):
 
   #### R_EE = R_rpy * R_corr    
     
@@ -404,9 +401,7 @@ Symbolically define our homogeneous transform as following:
 
 ![alt text](IMAGES/1.png)  
 
-where l, m and n are orthonormal vectors representing the end-effector orientation along X, Y, Z axes of the local coordinate frame.
-
-Since n is the vector along the z-axis of the gripper_link, we can say the following
+where l, m and n are orthonormal vectors, n is the vector along the z-axis of the gripper_link:
 
 Px, Py, Pz = end-effector positions
 
@@ -420,14 +415,14 @@ nx, ny, and nz values from this Rrpy matrix to obtain the wrist center position.
  
 ![alt text](IMAGES/2.png) 
 
-Calculate Wrest Center:
+Calculate Wrist Center:
 
     WC = EE - (0.303) * ROT_EE[:,2]
     
 
 Define out theta values through trignometry:
 
-To find 𝜃1, project Wz onto the ground plane:
+To find 𝜃1, Wz is projected onto the ground plane:
 
 ![alt text](IMAGES/Im2.jpg) 
 
@@ -450,7 +445,7 @@ C = a2 = 1.25
     side_C = 1.25
     side_B = sqrt(pow((sqrt(WC[0]*WC[0] + WC[1]*WC[1]) - 0.35), 2) + pow((WC[2] - 0.75), 2))
 
-All three sides of the triangle are known. To calculate all of the three inner angles of the triangle from the known three sides use Cosine Laws SSS:
+calculate all of the three inner angles of the triangle from the known three sides using Cosine Laws SSS:
 
 
 ![alt text](IMAGES/4.png) 
@@ -473,17 +468,18 @@ find theta2 and theta3:
  
 goal: find the final three joint variables 𝜃4,𝜃5 and 𝜃6.
 
-Using the individual DH transforms we can obtain the resultant transform and hence resultant rotation by:
+obtain the resultant transform and hence resultant rotation by Using the individual DH transforms:
 
 #### R0_6 = R0_1*R1_2*R2_3*R3_4*R4_5*R5_6
 
-Since the overall RPY (Roll Pitch Yaw) rotation between base_link and gripper_link must be equal to the product of individual rotations between respective links, following holds true:
+Since the overall RPY (Roll Pitch Yaw) rotation between base_link and gripper_link must be equal:
 
 ##### R0_6 = Rrpy
 
-Rrpy = Homogeneous RPY rotation between base_link and gripper_link
+R_EE = Homogeneous RPY rotation between base_link and gripper_link
 
-We can substitute the values we calculated for joints 1 to 3 in their respective individual rotation matrices and pre-multiply both sides of the above equation by inv(R0_3) which leads to:
+1-substitute the values we calculated for joints 1 to 3 in their respective individual rotation matrices 
+2-pre-multiply both sides of the above equation by inv(R0_3) which leads to:
 
 #### 3_6 = inv(R0_3) * Rrpy
 
@@ -501,10 +497,10 @@ Inverse orientation problem reduces to finding a set of Euler angles (θ4, θ5, 
 
 ![alt text](IMAGES/4_1.PNG)
 
-solve this, take two cases: 
+two cases: 
 
    1. Both r13 and r23 are not zero (i.e. θ5 ≠ 0)… nonsingular 
-   2. θ5 = 0, thus r13 = r23 = 0… singular 
+ 
  
 Nonsingular case
 
@@ -512,22 +508,26 @@ Nonsingular case
   
 ![alt text](IMAGES/4_2.PNG) 
 
+   2. θ5 = 0, thus r13 = r23 = 0… singular
+
 Euler angles from rotation matrix:
 
     theta5 = atan2(sqrt(R3_6[0,2]*R3_6[0,2] + R3_6[2,2]*R3_6[2,2]),R3_6[1,2])
  
- two values for θ5_Using the first (s5 > 0):
+ two values for non-singular case:
+ 
+ 1- (s5 > 0):
 
 ![alt text](IMAGES/4_3.PNG)     
 
- Using the second value for θ5 (s5 < 0):
+2 - (s5 < 0):
  
 ![alt text](IMAGES/4_3.PNG)  
 
- select best solution based on theta5:
+select best solution based on theta5:
 
-    if (theta5 > pi) :
-        theta4 = atan2(-R3_6[2,2], R3_6[0,2]) ## REVIEW THIS LINE SOLVING FOR THETA
+    if (theta5 > 0) :
+        theta4 = atan2(-R3_6[2,2], R3_6[0,2]) 
         theta6 = atan2(R3_6[1,1],-R3_6[1,0])
     else:
         theta4 = atan2(R3_6[2,2], -R3_6[0,2])
