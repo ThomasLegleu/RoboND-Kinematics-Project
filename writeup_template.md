@@ -533,6 +533,7 @@ select best solution based on theta5:
         theta4 = atan2(R3_6[2,2], -R3_6[0,2])
         theta6 = atan2(-R3_6[1,1],R3_6[1,0]) 
  
+singular vs nonsingular case picked up from: https://www.uio.no/studier/emner/matnat/ifi/INF3480/v14/undervisningsmatriale/lec05-Inverse-VelocityKinematicsI.pdf
  
  Testing the Inverse Kinematic Equation through the IK_debug.py: 
  
