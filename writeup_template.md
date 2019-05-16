@@ -36,8 +36,10 @@ You're reading it!
 
 Clone this repository to your home directory:
 
+    ```sh
     $ git clone https://github.com/udacity/RoboND-Kinematics-Project.git
-
+    ```
+    
 Install missing ROS dependencies using the rosdep install command:
 
     $ cd ~/catkin_ws/
