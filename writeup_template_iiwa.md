@@ -144,11 +144,11 @@ URDF joint positions and orientations to generate an extraction table:
 
 0   | joint | parent | child | x | y | z | r | p | y
 --- | --- | --- | --- | --- |--- | --- | --- | --- | --- |
-0 | fixed_base | base_footprint | base_link | 0 | 0 | 0 | 0| 0 | 0
+0 | joint_0 | base_footprint | base_link | 0 | 0 | 0 | 0| 0 | 0
 1 | joint_1 | link_0 | link_1 | 0 | 0 | 0.15 | 0 | 0 | 0
-2 | joint_2 | link_1 | link_2 | 0 | 0 | 0.19 | 0 | 0 | 0
+2 | joint_2 | link_1 | link_2 | 0 | 0 | 0.19 | 90 | 0 | 180
 3 | joint_3 | link_2 | link_3  | 0 | 0.21 | 0 | 90 | 0 | 180
-4 | joint_4 | link_3 | link_4  | 0.96 | 0 | -0.054  | 0 | 0 | 0
+4 | joint_4 | link_3 | link_4  | 0.0 6 | 0 | -0.054  | 0 | 0 | 0
 5 | joint_5 | link_4 | link_5  | 0.54 | 0 | 0 | 0 | 0 | 0
 6 | joint_6 | link_5 | link_6  | 0.193 | 0 | 0 | 0 | 0 | 0
 7 | gripper | link_6 | grip_link  | 0.193 | 0 | 0 | 0 | 0 | 0
