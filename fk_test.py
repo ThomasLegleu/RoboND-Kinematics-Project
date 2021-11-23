@@ -79,5 +79,6 @@ T0_T7_corr = (T0_T7 * R_corr)
 #T0_7 = T0_T7_corr.evalf(subs={q1: 0, q2: 0, q3: 0, q4: 0, q5: 0, q6: 0})
 
 T0_7 = T0_T7_corr.evalf(subs={q1: 0.77, q2: 0, q3: 0, q4: 0, q5: 0, q6: 0})
+print(T0_T7_corr)
 print(T0_7)
 
