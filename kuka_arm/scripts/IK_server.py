@@ -9,6 +9,8 @@
 
 # Author: Harsh Pandya
 
+# Modifications: Thomas Legleu
+
 # import modules
 import rospy
 import tf
