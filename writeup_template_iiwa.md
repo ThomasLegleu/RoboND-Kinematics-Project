@@ -154,6 +154,8 @@ URDF joint positions and orientations to generate an extraction table:
 7 | gripper | link_6 | grip_link  | 0.193 | 0 | 0 | 0 | 0 | 0
 . | total | |  | 2.153 | 0 | 1.946 | 0 | 0 | 0
 
+Finish the dh parameters for the kuka iiwa
+
 
 Translate x and z coordinates into link length and link offset for finding dh parameter table:
 
